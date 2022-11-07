@@ -7,17 +7,24 @@ def extract_cuisines(url):
     req = Request(url)
     html = urlopen(req)
     soup = BeautifulSoup(html, 'html.parser')
-    print(soup.prettify())
-    # links = []
-    # for div in soup.findAll('div', {'class': "alphabetical-list__group"}):
-    #     for ul in div.findAll('ul', {"class": "loc link-list"}):
-    #         for li in ul.findAll('li', {'class': "comp link-list__item"}):
-    #             link = li.find('a')
-    #             links.append(link['href'])
-    return None # links
-def store_links(url, name):
-    links = extract_cuisines(url)
-    with open(f'{name}.json', 'w') as file:
-        json.dump({'url': url, 'links': links}, file)
+    links = []
+    title = soup.title.string
+    count = 0
+    for a in soup.findAll('a', {'class': "comp mntl-card-list-items mntl-document-card mntl-card card card--no-image"}):
+        recipe_link = a['href']
+        div1 = a.find('div', {'class': 'loc card__top'})
+        div2 = div1.find('div', {'class': "card__media mntl-universal-image card__media universal-image__container"})
+        div3 = div2.find('div', {'class': "img-placeholder"})
+        img = div3.find('img', {'class': 'lazyload card__img universal-image__image'})
+        img_link = img['data-src']
+        links.append({'recipe_link': recipe_link, 'image_link': img_link})
+        count += 1
+    print(count)
+    return links, title
 
-extract_cuisines("https://www.allrecipes.com/recipes/732/us-recipes/amish-and-mennonite/")
+def store_links(url, name):
+    links, title = extract_cuisines(url)
+    with open(f'{name}.json', 'w') as file:
+        json.dump({'url': url, 'links': links, 'title': title}, file)
+
+store_links("https://www.allrecipes.com/recipes/732/us-recipes/amish-and-mennonite/", 'amish-recipes')
