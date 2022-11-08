@@ -4,6 +4,4 @@ The goal of this repository is to set up a dataset with world cuisine images and
 
 Scraping includes scripts for gathering image data from all-recipes world cuisines
 
-Surveys includes ipy notebooks that explore transfer learning
-
 Data includes urls collected from the scraping scripts
