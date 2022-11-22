@@ -22,9 +22,6 @@ def extract_cuisines(url):
     print(count)
     return links, title
 
-def store_links(url, name):
+def store_links(url):
     links, title = extract_cuisines(url)
-    with open(f'{name}.json', 'w') as file:
-        json.dump({'url': url, 'links': links, 'title': title}, file)
-
-store_links("https://www.allrecipes.com/recipes/732/us-recipes/amish-and-mennonite/", 'amish-recipes')
+    return {'url': url, 'links': links, 'title': title}

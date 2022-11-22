@@ -8,6 +8,7 @@ def findAllImages(url):
     html = urlopen(req)
     soup = BeautifulSoup(html, 'html.parser')
     links = []
+    skipped = []
     try:
         title = soup.title.string
     except:
@@ -22,23 +23,14 @@ def findAllImages(url):
     
     div4 = soup.find('div', {'id': 'article__photo-ribbon_1-0'})
     if div4 != None:
-        for a in tqdm(div4.findAll('a', {'class': 'gallery-photos dialog-link mntl-text-link'}), desc='Accessing link of many links...'):
+        for a in div4.findAll('a', {'class': 'gallery-photos dialog-link mntl-text-link'}):
             div5 = a.find('div', {'class': 'img-placeholder'})
             img2 = div5.find('img')
             links.append(img2['data-src'])
     else:
-        print('skipped')
-    return links, title
-def storeImageLinks(fileWithURLs, name):
-    listRecipeImages = []
-    with open(fileWithURLs, 'r') as file:
-        dictionary = json.load(file)
-    urls = dictionary['links']
-    for url in tqdm(urls, desc='Accessing url...'):
-        links, title = findAllImages(url['recipe_link'])
-        temp_dict = {'links': links, 'title': title, 'url': url['recipe_link']}
-        listRecipeImages.append(temp_dict)
-    with open(f'{name}.json', 'w') as file2:
-        json.dump({'links': listRecipeImages, 'url': dictionary['url'], 'title': dictionary['title']}, file2)
-
-storeImageLinks("./amishRecipes.json", "amishCuisineImageLinks")
+        skipped.append(title)
+    return links, skipped, title
+def storeImageLinks(url):
+    links, skipped, title = findAllImages(url)
+    temp_dict = {'links': links, 'skipped': skipped, 'title': title}
+    return temp_dict
